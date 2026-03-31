@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoveX - 探索未来运动性能</title>
+    <meta name="description" content="MoveX 跑姿与运动表现分析小程序">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --secondary: #7000ff;
+            --bg: #03040b;
+            --glass: rgba(16, 18, 27, 0.4);
+            --border: rgba(0, 240, 255, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #8a9fc2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 动态背景效果 */
+        .ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .ambient-bg::before,
+        .ambient-bg::after {
+            content: '';
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s infinite ease-in-out alternate;
+            opacity: 0.15;
+        }
+
+        .ambient-bg::before {
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            top: -20%;
+            left: -10%;
+        }
+
+        .ambient-bg::after {
+            background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+            bottom: -20%;
+            right: -10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.1); }
+        }
+
+        /* 网格叠加层 */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 50px; }
+        }
+
+        /* 主内容卡片 */
+        .container {
+            position: relative;
+            z-index: 10;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                        inset 0 0 20px rgba(0, 240, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: cardEntrance 1s ease-out forwards;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -12px rgba(0, 240, 255, 0.1),
+                        inset 0 0 30px rgba(0, 240, 255, 0.1);
+            border-color: rgba(0, 240, 255, 0.4);
+        }
+
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* 标题区域 */
+        .brand {
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5),
+                         0 0 20px rgba(0, 240, 255, 0.3);
+            display: inline-block;
+            position: relative;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* 二维码区域 */
+        .qr-wrapper {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            margin: 0 auto 2rem;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 角落装饰 */
+        .qr-wrapper::before,
+        .qr-wrapper::after,
+        .qr-corners::before,
+        .qr-corners::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--primary);
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+
+        .qr-wrapper::before { top: 0; left: 0; border-width: 2px 0 0 2px; border-top-left-radius: 16px; }
+        .qr-wrapper::after { top: 0; right: 0; border-width: 2px 2px 0 0; border-top-right-radius: 16px; }
+        .qr-corners { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+        .qr-corners::before { bottom: 0; left: 0; border-width: 0 0 2px 2px; border-bottom-left-radius: 16px; }
+        .qr-corners::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; border-bottom-right-radius: 16px; }
+
+        .container:hover .qr-wrapper::before,
+        .container:hover .qr-wrapper::after,
+        .container:hover .qr-corners::before,
+        .container:hover .qr-corners::after {
+            width: 30px;
+            height: 30px;
+            border-color: #fff;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* 扫描线动画 */
+        .scanner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            box-shadow: 0 0 20px 5px var(--primary);
+            opacity: 0.6;
+            animation: scan 3s cubic-bezier(0.53, 0, 0.43, 1) infinite;
+            z-index: 3;
+            border-radius: 50%;
+        }
+
+        @keyframes scan {
+            0%, 100% { top: 5%; opacity: 0; }
+            10% { opacity: 0.6; }
+            50% { top: 95%; opacity: 0.8; }
+            90% { opacity: 0.6; }
+        }
+
+        .qr-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            position: relative;
+            z-index: 1;
+            /* In case image is white/light, blend mode helps it fit the dark theme slightly if needed, but for QR codes normal is best */
+        }
+
+        /* 引导文本 */
+        .action-text {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .action-subtext {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff66;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff66;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="container">
+        <div class="brand">
+            <h1 class="logo">Move<span>X</span></h1>
+            <div class="subtitle">Performance & Motion</div>
+        </div>
+
+        <div class="qr-wrapper">
+            <div class="qr-corners"></div>
+            <div class="scanner"></div>
+            <!-- 这里使用本地同目录下的 qrcode.jpg -->
+            <img src="qrcode.jpg" alt="MoveX 小程序二维码" class="qr-image" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://weixin.qq.com&color=000&bgcolor=fff';">
+        </div>
+
+        <div class="action-text">微信扫码 立即体验</div>
+        <div class="action-subtext">
+            <div class="status-dot"></div>
+            系统在线运行中
+        </div>
+    </div>
+</body>
+</html>
